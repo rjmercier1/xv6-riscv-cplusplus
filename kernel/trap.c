@@ -12,7 +12,12 @@ uint ticks;
 extern char trampoline[], uservec[], userret[];
 
 // in kernelvec.S, calls kerneltrap().
-void kernelvec();
+extern "C" {
+
+extern void kernelvec();
+extern void kerneltrap();
+
+}
 
 extern int devintr();
 

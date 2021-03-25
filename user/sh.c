@@ -50,7 +50,7 @@ struct backcmd {
 };
 
 int fork1(void);  // Fork but panics on failure.
-void panic(char*);
+void panic(const char*);
 struct cmd *parsecmd(char*);
 
 // Execute cmd.  Never returns.
@@ -172,7 +172,7 @@ main(void)
 }
 
 void
-panic(char *s)
+panic(const char *s)
 {
   fprintf(2, "%s\n", s);
   exit(1);
@@ -197,7 +197,7 @@ execcmd(void)
 {
   struct execcmd *cmd;
 
-  cmd = malloc(sizeof(*cmd));
+  cmd = static_cast<struct execcmd *>( malloc(sizeof(*cmd)) );
   memset(cmd, 0, sizeof(*cmd));
   cmd->type = EXEC;
   return (struct cmd*)cmd;
@@ -208,7 +208,7 @@ redircmd(struct cmd *subcmd, char *file, char *efile, int mode, int fd)
 {
   struct redircmd *cmd;
 
-  cmd = malloc(sizeof(*cmd));
+  cmd = static_cast<struct redircmd *>( malloc(sizeof(*cmd)) );
   memset(cmd, 0, sizeof(*cmd));
   cmd->type = REDIR;
   cmd->cmd = subcmd;
@@ -224,7 +224,7 @@ pipecmd(struct cmd *left, struct cmd *right)
 {
   struct pipecmd *cmd;
 
-  cmd = malloc(sizeof(*cmd));
+  cmd = static_cast<struct pipecmd *>( malloc(sizeof(*cmd)) );
   memset(cmd, 0, sizeof(*cmd));
   cmd->type = PIPE;
   cmd->left = left;
@@ -237,7 +237,7 @@ listcmd(struct cmd *left, struct cmd *right)
 {
   struct listcmd *cmd;
 
-  cmd = malloc(sizeof(*cmd));
+  cmd = static_cast<struct listcmd *>( malloc(sizeof(*cmd)) );
   memset(cmd, 0, sizeof(*cmd));
   cmd->type = LIST;
   cmd->left = left;
@@ -250,7 +250,7 @@ backcmd(struct cmd *subcmd)
 {
   struct backcmd *cmd;
 
-  cmd = malloc(sizeof(*cmd));
+  cmd = static_cast<struct backcmd *>( malloc(sizeof(*cmd)) );
   memset(cmd, 0, sizeof(*cmd));
   cmd->type = BACK;
   cmd->cmd = subcmd;
@@ -308,7 +308,7 @@ gettoken(char **ps, char *es, char **q, char **eq)
 }
 
 int
-peek(char **ps, char *es, char *toks)
+peek(char **ps, char *es, const char *toks)
 {
   char *s;
 

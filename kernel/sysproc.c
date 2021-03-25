@@ -10,7 +10,7 @@
 uint64
 sys_exit(void)
 {
-  int n;
+  uint n;
   if(argint(0, &n) < 0)
     return -1;
   exit(n);
@@ -42,7 +42,7 @@ uint64
 sys_sbrk(void)
 {
   int addr;
-  int n;
+  uint n;
 
   if(argint(0, &n) < 0)
     return -1;
@@ -55,7 +55,7 @@ sys_sbrk(void)
 uint64
 sys_sleep(void)
 {
-  int n;
+  uint n;
   uint ticks0;
 
   if(argint(0, &n) < 0)
@@ -76,7 +76,7 @@ sys_sleep(void)
 uint64
 sys_kill(void)
 {
-  int pid;
+  uint pid;
 
   if(argint(0, &pid) < 0)
     return -1;

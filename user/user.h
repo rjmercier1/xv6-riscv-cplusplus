@@ -2,6 +2,8 @@ struct stat;
 struct rtcdate;
 
 // system calls
+extern "C" {
+
 int fork(void);
 int exit(int) __attribute__((noreturn));
 int wait(int*);
@@ -10,7 +12,7 @@ int write(int, const void*, int);
 int read(int, void*, int);
 int close(int);
 int kill(int);
-int exec(char*, char**);
+int exec(const char*, const char *const []);
 int open(const char*, int);
 int mknod(const char*, short, short);
 int unlink(const char*);
@@ -23,6 +25,8 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+
+}
 
 // ulib.c
 int stat(const char*, struct stat*);

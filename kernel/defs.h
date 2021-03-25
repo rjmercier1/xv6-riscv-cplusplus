@@ -36,8 +36,8 @@ int             filewrite(struct file*, uint64, int n);
 
 // fs.c
 void            fsinit(int);
-int             dirlink(struct inode*, char*, uint);
-struct inode*   dirlookup(struct inode*, char*, uint*);
+int             dirlink(struct inode*, const char*, uint);
+struct inode*   dirlookup(struct inode*, const char*, uint*);
 struct inode*   ialloc(uint, short);
 struct inode*   idup(struct inode*);
 void            iinit();
@@ -47,8 +47,8 @@ void            iunlock(struct inode*);
 void            iunlockput(struct inode*);
 void            iupdate(struct inode*);
 int             namecmp(const char*, const char*);
-struct inode*   namei(char*);
-struct inode*   nameiparent(char*, char*);
+struct inode*   namei(const char*);
+struct inode*   nameiparent(const char*, char*);
 int             readi(struct inode*, int, uint64, uint, uint);
 void            stati(struct inode*, struct stat*);
 int             writei(struct inode*, int, uint64, uint, uint);
@@ -77,8 +77,8 @@ int             piperead(struct pipe*, uint64, int);
 int             pipewrite(struct pipe*, uint64, int);
 
 // printf.c
-void            printf(char*, ...);
-void            panic(char*) __attribute__((noreturn));
+void            printf(const char*, ...);
+void            panic(const char*) __attribute__((noreturn));
 void            printfinit(void);
 
 // proc.c
@@ -107,12 +107,16 @@ int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 
 // swtch.S
+extern "C" {
+
 void            swtch(struct context*, struct context*);
+
+}
 
 // spinlock.c
 void            acquire(struct spinlock*);
 int             holding(struct spinlock*);
-void            initlock(struct spinlock*, char*);
+void            initlock(struct spinlock*, const char*);
 void            release(struct spinlock*);
 void            push_off(void);
 void            pop_off(void);
@@ -121,7 +125,7 @@ void            pop_off(void);
 void            acquiresleep(struct sleeplock*);
 void            releasesleep(struct sleeplock*);
 int             holdingsleep(struct sleeplock*);
-void            initsleeplock(struct sleeplock*, char*);
+void            initsleeplock(struct sleeplock*, const char*);
 
 // string.c
 int             memcmp(const void*, const void*, uint);
@@ -134,6 +138,7 @@ char*           strncpy(char*, const char*, int);
 
 // syscall.c
 int             argint(int, int*);
+int             argint(int, uint*);
 int             argstr(int, char*, int);
 int             argaddr(int, uint64 *);
 int             fetchstr(uint64, char*, int);

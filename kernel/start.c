@@ -14,7 +14,12 @@ __attribute__ ((aligned (16))) char stack0[4096 * NCPU];
 uint64 timer_scratch[NCPU][5];
 
 // assembly code in kernelvec.S for machine-mode timer interrupt.
+extern "C" {
+
 extern void timervec();
+extern void start();        // So this can be called from machine code
+
+}
 
 // entry.S jumps here in machine mode on stack0.
 void

@@ -36,7 +36,7 @@ void*
 memset(void *dst, int c, uint n)
 {
   char *cdst = (char *) dst;
-  int i;
+  uint i;
   for(i = 0; i < n; i++){
     cdst[i] = c;
   }
@@ -101,8 +101,8 @@ memmove(void *vdst, const void *vsrc, int n)
   char *dst;
   const char *src;
 
-  dst = vdst;
-  src = vsrc;
+  dst = static_cast<char *>( vdst );
+  src = static_cast<const char *>( vsrc );
   if (src > dst) {
     while(n-- > 0)
       *dst++ = *src++;
@@ -118,7 +118,8 @@ memmove(void *vdst, const void *vsrc, int n)
 int
 memcmp(const void *s1, const void *s2, uint n)
 {
-  const char *p1 = s1, *p2 = s2;
+  const char *p1 = static_cast<const char *>( s1 ),
+             *p2 = static_cast<const char *>( s2 );
   while (n-- > 0) {
     if (*p1 != *p2) {
       return *p1 - *p2;

@@ -62,7 +62,8 @@ exec(char *path, char **argv)
   ip = 0;
 
   p = myproc();
-  uint64 oldsz = p->sz;
+  uint64 oldsz;
+  oldsz = p->sz;
 
   // Allocate two pages at the next page boundary.
   // Use the second as the user stack.
@@ -135,8 +136,9 @@ exec(char *path, char **argv)
 static int
 loadseg(pagetable_t pagetable, uint64 va, struct inode *ip, uint offset, uint sz)
 {
-  uint i, n;
+  uint i;
   uint64 pa;
+  int n;
 
   if((va % PGSIZE) != 0)
     panic("loadseg: va must be page aligned");

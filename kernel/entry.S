@@ -2,7 +2,8 @@
         # and causes each CPU to jump there.
         # kernel.ld causes the following code to
         # be placed at 0x80000000.
-.section .text
+    .section .text
+    .globl  _entry
 _entry:
 	# set up a stack for C.
         # stack0 is declared in start.c,

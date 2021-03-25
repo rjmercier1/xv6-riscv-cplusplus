@@ -119,14 +119,14 @@ sys_fstat(void)
 uint64
 sys_link(void)
 {
-  char name[DIRSIZ], new[MAXPATH], old[MAXPATH];
+  char name[DIRSIZ], newp[MAXPATH], oldp[MAXPATH];
   struct inode *dp, *ip;
 
-  if(argstr(0, old, MAXPATH) < 0 || argstr(1, new, MAXPATH) < 0)
+  if(argstr(0, oldp, MAXPATH) < 0 || argstr(1, newp, MAXPATH) < 0)
     return -1;
 
   begin_op();
-  if((ip = namei(old)) == 0){
+  if((ip = namei(oldp)) == 0){
     end_op();
     return -1;
   }
@@ -142,7 +142,7 @@ sys_link(void)
   iupdate(ip);
   iunlock(ip);
 
-  if((dp = nameiparent(new, name)) == 0)
+  if((dp = nameiparent(newp, name)) == 0)
     goto bad;
   ilock(dp);
   if(dp->dev != ip->dev || dirlink(dp, name, ip->inum) < 0){
@@ -169,7 +169,7 @@ bad:
 static int
 isdirempty(struct inode *dp)
 {
-  int off;
+  uint off;
   struct dirent de;
 
   for(off=2*sizeof(de); off<dp->size; off+=sizeof(de)){
@@ -331,10 +331,10 @@ sys_open(void)
   }
 
   if(ip->type == T_DEVICE){
-    f->type = FD_DEVICE;
+    f->type = file::FD_DEVICE;
     f->major = ip->major;
   } else {
-    f->type = FD_INODE;
+    f->type = file::FD_INODE;
     f->off = 0;
   }
   f->ip = ip;
@@ -416,7 +416,7 @@ uint64
 sys_exec(void)
 {
   char path[MAXPATH], *argv[MAXARG];
-  int i;
+  uint i;
   uint64 uargv, uarg;
 
   if(argstr(0, path, MAXPATH) < 0 || argaddr(1, &uargv) < 0){
@@ -434,14 +434,15 @@ sys_exec(void)
       argv[i] = 0;
       break;
     }
-    argv[i] = kalloc();
+    argv[i] = static_cast<char *>( kalloc() );
     if(argv[i] == 0)
       goto bad;
     if(fetchstr(uarg, argv[i], PGSIZE) < 0)
       goto bad;
   }
 
-  int ret = exec(path, argv);
+  int ret;
+  ret = exec(path, argv);
 
   for(i = 0; i < NELEM(argv) && argv[i] != 0; i++)
     kfree(argv[i]);

@@ -40,7 +40,7 @@ printint(int fd, int xx, int base, int sgn)
 
 static void
 printptr(int fd, uint64 x) {
-  int i;
+  uint i;
   putc(fd, '0');
   putc(fd, 'x');
   for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
@@ -51,7 +51,7 @@ printptr(int fd, uint64 x) {
 void
 vprintf(int fd, const char *fmt, va_list ap)
 {
-  char *s;
+  const char *s;
   int c, i, state;
 
   state = 0;
@@ -73,7 +73,7 @@ vprintf(int fd, const char *fmt, va_list ap)
       } else if(c == 'p') {
         printptr(fd, va_arg(ap, uint64));
       } else if(c == 's'){
-        s = va_arg(ap, char*);
+        s = va_arg(ap, const char*);
         if(s == 0)
           s = "(null)";
         while(*s != 0){

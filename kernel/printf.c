@@ -52,7 +52,7 @@ printint(int xx, int base, int sign)
 static void
 printptr(uint64 x)
 {
-  int i;
+  uint i;
   consputc('0');
   consputc('x');
   for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
@@ -61,11 +61,11 @@ printptr(uint64 x)
 
 // Print to the console. only understands %d, %x, %p, %s.
 void
-printf(char *fmt, ...)
+printf(const char *fmt, ...)
 {
   va_list ap;
   int i, c, locking;
-  char *s;
+  const char *s;
 
   locking = pr.locking;
   if(locking)
@@ -115,7 +115,7 @@ printf(char *fmt, ...)
 }
 
 void
-panic(char *s)
+panic(const char *s)
 {
   pr.locking = 0;
   printf("panic: ");

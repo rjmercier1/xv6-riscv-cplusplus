@@ -34,7 +34,7 @@ proc_mapstacks(pagetable_t kpgtbl) {
   struct proc *p;
   
   for(p = proc; p < &proc[NPROC]; p++) {
-    char *pa = kalloc();
+    char *pa = static_cast<char *>( kalloc() );
     if(pa == 0)
       panic("kalloc");
     uint64 va = KSTACK((int) (p - proc));
@@ -604,7 +604,7 @@ either_copyout(int user_dst, uint64 dst, void *src, uint64 len)
 {
   struct proc *p = myproc();
   if(user_dst){
-    return copyout(p->pagetable, dst, src, len);
+    return copyout(p->pagetable, dst, static_cast<char *>( src ), len);
   } else {
     memmove((char *)dst, src, len);
     return 0;
@@ -619,7 +619,7 @@ either_copyin(void *dst, int user_src, uint64 src, uint64 len)
 {
   struct proc *p = myproc();
   if(user_src){
-    return copyin(p->pagetable, dst, src, len);
+    return copyin(p->pagetable, static_cast<char *>( dst ), src, len);
   } else {
     memmove(dst, (char*)src, len);
     return 0;
@@ -632,24 +632,29 @@ either_copyin(void *dst, int user_src, uint64 src, uint64 len)
 void
 procdump(void)
 {
-  static char *states[] = {
-  [UNUSED]    "unused",
-  [SLEEPING]  "sleep ",
-  [RUNNABLE]  "runble",
-  [RUNNING]   "run   ",
-  [ZOMBIE]    "zombie"
+  static struct {
+    int state;
+    const char *desc;
+  } states[] = {
+    { UNUSED,    "unused" },
+    { SLEEPING,  "sleep " },
+    { RUNNABLE,  "runble" },
+    { RUNNING,   "run   " },
+    { ZOMBIE,    "zombie" }
   };
   struct proc *p;
-  char *state;
+  const char *state;
 
   printf("\n");
   for(p = proc; p < &proc[NPROC]; p++){
     if(p->state == UNUSED)
       continue;
-    if(p->state >= 0 && p->state < NELEM(states) && states[p->state])
-      state = states[p->state];
-    else
-      state = "???";
+
+    state = "???";
+    for(uint i = 0; i < sizeof(states)/sizeof(states[0]); i++)
+      if (p->state == states[i].state)
+        state = states[i].desc;
+
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }

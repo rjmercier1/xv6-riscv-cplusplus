@@ -242,7 +242,7 @@ go(int which_child)
           exit(1);
         }
         close(aa[1]);
-        char *args[3] = { "echo", "hi", 0 };
+        const char *args[3] = { "echo", "hi", 0 };
         exec("grindir/../echo", args);
         fprintf(2, "grind: echo: not found\n");
         exit(2);
@@ -266,7 +266,7 @@ go(int which_child)
           exit(5);
         }
         close(bb[1]);
-        char *args[2] = { "cat", 0 };
+        const char *args[2] = { "cat", 0 };
         exec("/cat", args);
         fprintf(2, "grind: cat: not found\n");
         exit(6);

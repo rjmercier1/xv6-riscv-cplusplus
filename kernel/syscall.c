@@ -61,6 +61,13 @@ argint(int n, int *ip)
   return 0;
 }
 
+int
+argint(int n, uint *ip)
+{
+  *ip = argraw(n);
+  return 0;
+}
+
 // Retrieve an argument as a pointer.
 // Doesn't check for legality, since
 // copyin/copyout will do that.
@@ -105,6 +112,9 @@ extern uint64 sys_wait(void);
 extern uint64 sys_write(void);
 extern uint64 sys_uptime(void);
 
+/*
+ *  This currently doesn't work in C++
+ *
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,
@@ -129,6 +139,9 @@ static uint64 (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 };
 
+ *
+ */
+
 void
 syscall(void)
 {
@@ -136,9 +149,33 @@ syscall(void)
   struct proc *p = myproc();
 
   num = p->trapframe->a7;
-  if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
-    p->trapframe->a0 = syscalls[num]();
-  } else {
+  /*
+   * A good compiler will turn this into a jump table
+   *
+   */
+  switch (num) {
+  case SYS_fork:    p->trapframe->a0 = sys_fork(); break;
+  case SYS_exit:    p->trapframe->a0 = sys_exit(); break;
+  case SYS_wait:    p->trapframe->a0 = sys_wait(); break;
+  case SYS_pipe:    p->trapframe->a0 = sys_pipe(); break;
+  case SYS_read:    p->trapframe->a0 = sys_read(); break;
+  case SYS_kill:    p->trapframe->a0 = sys_kill(); break;
+  case SYS_exec:    p->trapframe->a0 = sys_exec(); break;
+  case SYS_fstat:   p->trapframe->a0 = sys_fstat(); break;
+  case SYS_chdir:   p->trapframe->a0 = sys_chdir(); break;
+  case SYS_dup:     p->trapframe->a0 = sys_dup(); break;
+  case SYS_getpid:  p->trapframe->a0 = sys_getpid(); break;
+  case SYS_sbrk:    p->trapframe->a0 = sys_sbrk(); break;
+  case SYS_sleep:   p->trapframe->a0 = sys_sleep(); break;
+  case SYS_uptime:  p->trapframe->a0 = sys_uptime(); break;
+  case SYS_open:    p->trapframe->a0 = sys_open(); break;
+  case SYS_write:   p->trapframe->a0 = sys_write(); break;
+  case SYS_mknod:   p->trapframe->a0 = sys_mknod(); break;
+  case SYS_unlink:  p->trapframe->a0 = sys_unlink(); break;
+  case SYS_link:    p->trapframe->a0 = sys_link(); break;
+  case SYS_mkdir:   p->trapframe->a0 = sys_mkdir(); break;
+  case SYS_close:   p->trapframe->a0 = sys_close(); break;
+  default:
     printf("%d %s: unknown sys call %d\n",
             p->pid, p->name, num);
     p->trapframe->a0 = -1;
